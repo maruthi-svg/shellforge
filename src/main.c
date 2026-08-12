@@ -1,38 +1,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <readline/history.h>
+
 #include <readline/readline.h>
+#include <readline/history.h>
+
+#include "../include/lexer.h"
+
+#define INPUT_SIZE 1024
+
 int main(void)
 {
- // Display a welcome banner when the shell starts
- printf("=====================================\n");
- printf("Shellforge \n");
- printf(" A Unix Style Shell written in C\n");
- printf("=====================================\n");
- char *line;
- while (1)
- {
- line = readline("shellforge$ ");
- if (line == NULL)
- {
- printf("\nGoodbye!\n");
- break;
- }
- if (strlen(line) == 0)
- {
- free(line);
- continue;
- }
- add_history(line);
- if (strcmp(line, "exit") == 0)
- {
- free(line);
- printf("Exiting...\n");
- break;
- }
- printf(" YOU ENTERED : %s\n", line);
- free(line);
- }
- return 0;
+    printf("====================================\n");
+    printf("        Shellforge - Milestone 2\n");
+    printf("      Tokenizer + Lexer Enabled\n");
+    printf("====================================\n");
+
+    while (1)
+    {
+        char *input = readline("shellforge$ ");
+
+        if (input == NULL)
+        {
+            printf("\nExiting Shellforge...\n");
+            break;
+        }
+
+        /* Ignore empty input */
+        if (strlen(input) == 0)
+        {
+            free(input);
+            continue;
+        }
+
+        /* Exit command */
+        if (strcmp(input, "exit") == 0)
+        {
+            free(input);
+            break;
+        }
+
+        /* Store command in history */
+        add_history(input);
+
+        token_list_t list;
+
+        if (lexer(input, &list) == 0)
+        {
+            token_print(&list);
+        }
+
+        free(input);
+    }
+
+    return 0;
 }
